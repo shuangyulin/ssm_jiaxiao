@@ -1,0 +1,48 @@
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.JiaofeiTypeMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加缴费类型记录 -->
+	<insert id="addJiaofeiType" parameterType="jiaofeiType">
+		insert into t_jiaofeiType(typeName) values 
+		(#{typeName})
+	</insert>
+
+	<!-- 按照查询条件分页查询缴费类型记录 -->
+	<select id="queryJiaofeiType" resultMap="jiaofeiTypeMap" >
+		select t_jiaofeiType.* from t_jiaofeiType ${where} limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="jiaofeiTypeMap" type="jiaofeiType">
+        <id property="typeId" column="typeId" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有缴费类型记录 -->
+	<select id="queryJiaofeiTypeList" resultMap="jiaofeiTypeMap" >
+		select t_jiaofeiType.* from t_jiaofeiType ${where}
+	</select>
+
+    <!-- 按照查询条件的缴费类型记录数 -->
+	<select id="queryJiaofeiTypeCount" resultType="int">
+		select count(*) from t_jiaofeiType ${where}
+	</select>
+
+	<!-- 根据主键查询某个缴费类型记录 -->
+	<select id="getJiaofeiType" parameterType="int" resultMap="jiaofeiTypeMap">
+		select * from t_jiaofeiType where t_jiaofeiType.typeId = #{typeId}
+	</select>
+
+	<!-- 更新缴费类型记录 -->
+	<update id="updateJiaofeiType" parameterType="jiaofeiType">
+		update t_jiaofeiType set typeName=#{typeName} where typeId = #{typeId}
+	</update>
+
+	<!-- 删除缴费类型记录 -->
+	<delete id="deleteJiaofeiType" parameterType="int">
+		delete from t_jiaofeiType where typeId=#{typeId}
+	</delete>
+
+</mapper>

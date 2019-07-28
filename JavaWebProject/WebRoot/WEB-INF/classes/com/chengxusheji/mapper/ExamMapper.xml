@@ -1,0 +1,50 @@
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.ExamMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加考试记录 -->
+	<insert id="addExam" parameterType="exam">
+		insert into t_exam(examName,kemu,userObj,examDate,startTime,examPlace,coachObj,examMemo) values 
+		(#{examName},#{kemu},#{userObj.user_name},#{examDate},#{startTime},#{examPlace},#{coachObj.coachNo},#{examMemo})
+	</insert>
+
+	<!-- 按照查询条件分页查询考试记录 -->
+	<select id="queryExam" resultMap="examMap" >
+		select t_exam.* from t_exam,t_coach,t_userInfo ${where} and t_exam.userObj = t_userInfo.user_name and t_exam.coachObj = t_coach.coachNo limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="examMap" type="exam">
+        <id property="examId" column="examId" />
+        <association property="userObj" column="userObj" select="com.chengxusheji.mapper.UserInfoMapper.getUserInfo" />
+        <association property="coachObj" column="coachObj" select="com.chengxusheji.mapper.CoachMapper.getCoach" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有考试记录 -->
+	<select id="queryExamList" resultMap="examMap" >
+		select t_exam.* from t_exam,t_coach,t_userInfo ${where} and t_exam.userObj = t_userInfo.user_name and t_exam.coachObj = t_coach.coachNo
+	</select>
+
+    <!-- 按照查询条件的考试记录数 -->
+	<select id="queryExamCount" resultType="int">
+		select count(*) from t_exam,t_coach,t_userInfo ${where} and t_exam.userObj = t_userInfo.user_name and t_exam.coachObj = t_coach.coachNo
+	</select>
+
+	<!-- 根据主键查询某个考试记录 -->
+	<select id="getExam" parameterType="int" resultMap="examMap">
+		select * from t_exam where t_exam.examId = #{examId}
+	</select>
+
+	<!-- 更新考试记录 -->
+	<update id="updateExam" parameterType="exam">
+		update t_exam set examName=#{examName},kemu=#{kemu},userObj=#{userObj.user_name},examDate=#{examDate},startTime=#{startTime},examPlace=#{examPlace},coachObj=#{coachObj.coachNo},examMemo=#{examMemo} where examId = #{examId}
+	</update>
+
+	<!-- 删除考试记录 -->
+	<delete id="deleteExam" parameterType="int">
+		delete from t_exam where examId=#{examId}
+	</delete>
+
+</mapper>

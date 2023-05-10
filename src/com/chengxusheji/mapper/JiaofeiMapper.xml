@@ -1,0 +1,50 @@
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.JiaofeiMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加缴费记录 -->
+	<insert id="addJiaofei" parameterType="jiaofei">
+		insert into t_jiaofei(jiaofeiTypeObj,jiaofeiName,jiaofeiMoney,userObj,jiaofeiTime,jiaofeiMemo) values 
+		(#{jiaofeiTypeObj.typeId},#{jiaofeiName},#{jiaofeiMoney},#{userObj.user_name},#{jiaofeiTime},#{jiaofeiMemo})
+	</insert>
+
+	<!-- 按照查询条件分页查询缴费记录 -->
+	<select id="queryJiaofei" resultMap="jiaofeiMap" >
+		select t_jiaofei.* from t_jiaofei,t_jiaofeiType,t_userInfo ${where} and t_jiaofei.jiaofeiTypeObj = t_jiaofeiType.typeId and t_jiaofei.userObj = t_userInfo.user_name limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="jiaofeiMap" type="jiaofei">
+        <id property="jiaofeiId" column="jiaofeiId" />
+        <association property="jiaofeiTypeObj" column="jiaofeiTypeObj" select="com.chengxusheji.mapper.JiaofeiTypeMapper.getJiaofeiType" />
+        <association property="userObj" column="userObj" select="com.chengxusheji.mapper.UserInfoMapper.getUserInfo" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有缴费记录 -->
+	<select id="queryJiaofeiList" resultMap="jiaofeiMap" >
+		select t_jiaofei.* from t_jiaofei,t_jiaofeiType,t_userInfo ${where} and t_jiaofei.jiaofeiTypeObj = t_jiaofeiType.typeId and t_jiaofei.userObj = t_userInfo.user_name
+	</select>
+
+    <!-- 按照查询条件的缴费记录数 -->
+	<select id="queryJiaofeiCount" resultType="int">
+		select count(*) from t_jiaofei,t_jiaofeiType,t_userInfo ${where} and t_jiaofei.jiaofeiTypeObj = t_jiaofeiType.typeId and t_jiaofei.userObj = t_userInfo.user_name
+	</select>
+
+	<!-- 根据主键查询某个缴费记录 -->
+	<select id="getJiaofei" parameterType="int" resultMap="jiaofeiMap">
+		select * from t_jiaofei where t_jiaofei.jiaofeiId = #{jiaofeiId}
+	</select>
+
+	<!-- 更新缴费记录 -->
+	<update id="updateJiaofei" parameterType="jiaofei">
+		update t_jiaofei set jiaofeiTypeObj=#{jiaofeiTypeObj.typeId},jiaofeiName=#{jiaofeiName},jiaofeiMoney=#{jiaofeiMoney},userObj=#{userObj.user_name},jiaofeiTime=#{jiaofeiTime},jiaofeiMemo=#{jiaofeiMemo} where jiaofeiId = #{jiaofeiId}
+	</update>
+
+	<!-- 删除缴费记录 -->
+	<delete id="deleteJiaofei" parameterType="int">
+		delete from t_jiaofei where jiaofeiId=#{jiaofeiId}
+	</delete>
+
+</mapper>
